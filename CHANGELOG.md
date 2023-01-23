@@ -1,3 +1,9 @@
+# v0.5.10
+
+Released 2023-01-22
+
+- added resiliancy around php code
+
 # v0.5.9
 
 Released 2023-01-20
