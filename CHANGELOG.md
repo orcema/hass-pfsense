@@ -1,3 +1,33 @@
+# v0.5.16
+
+Released 2023-01-30
+
+- update deprecated syntax
+
+# v0.5.15
+
+Released 2023-01-29
+
+- better unavailable logic
+
+# v0.5.14
+
+Released 2023-01-29
+
+- ensure proper data type
+
+# v0.5.13
+
+Released 2023-01-29
+
+- ensure proper data type
+
+# v0.5.12
+
+Released 2023-01-29
+
+- update deprecated syntax
+
 # v0.5.11
 
 Released 2023-01-23
