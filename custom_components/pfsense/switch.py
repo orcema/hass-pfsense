@@ -157,6 +157,18 @@ async def async_setup_entry(
                 # entity_category = ENTITY_CATEGORY_CONFIG
                 device_class = SwitchDeviceClass.SWITCH
 
+                if service["name"] == "openvpn":
+                    key = "service.{}.{}".format(
+                        service["name"] + "-" + service["vpnid"],
+                        property,
+                    )
+                    name = "Service {} {}".format(
+                        service["name"] + " " + service["description"], property
+                    )
+                else:
+                    key = "service.{}.{}".format(service["name"], property)
+                    name = "Service {} {}".format(service["name"], property)
+
                 entity = PfSenseServiceSwitch(
                     config_entry,
                     coordinator,
@@ -353,7 +365,12 @@ class PfSenseServiceSwitch(PfSenseSwitch):
         found = None
         service_name = self._pfsense_get_service_name()
         for service in state["services"]:
-            if service["name"] == service_name:
+            if service_name.startswith("openvpn"):
+                # [ "openvpn", "<vpnid>""]
+                parts = service_name.split("-")
+                if service["name"] == parts[0] and service["vpnid"] == parts[1]:
+                    found = service
+            elif service["name"] == service_name:
                 found = service
                 break
         return found
@@ -381,19 +398,17 @@ class PfSenseServiceSwitch(PfSenseSwitch):
         """Turn the entity on."""
         service = self._pfsense_get_service()
         client = self._get_pfsense_client()
-        result = await self.hass.async_add_executor_job(
-            client.start_service, service["name"]
+        await self.hass.async_add_executor_job(
+            client.start_service, service["name"], service
         )
-        if result:
-            await self.coordinator.async_refresh()
+        await self.coordinator.async_refresh()
 
     async def async_turn_off(self, **kwargs):
         """Turn the entity off."""
         service = self._pfsense_get_service()
         client = self._get_pfsense_client()
-        result = await self.hass.async_add_executor_job(
-            client.stop_service, service["name"]
+        await self.hass.async_add_executor_job(
+            client.stop_service, service["name"], service
         )
-        if result:
-            await self.coordinator.async_refresh()
+        await self.coordinator.async_refresh()
 
